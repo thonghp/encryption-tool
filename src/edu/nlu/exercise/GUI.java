@@ -75,6 +75,7 @@ public class GUI extends JFrame implements ActionListener {
 
     private HashMD_SHA hashMD = new HashMD_SHA();
     private Symmetric symmetric = new Symmetric();
+    private ASymmetric aSymmetric = new ASymmetric();
 
     public GUI() {
         setResizable(false);
@@ -154,8 +155,7 @@ public class GUI extends JFrame implements ActionListener {
 
         cbbAlgorithm1 = new JComboBox();
         cbbAlgorithm1
-                .setModel(new DefaultComboBoxModel(new String[]{"AES", "ARCFOUR", "Blowfish", "ChaCha20", "DES",
-                        "DESede", "RC2"}));
+                .setModel(new DefaultComboBoxModel(new String[]{"AES", "ARCFOUR", "Blowfish", "DES", "DESede", "RC2"}));
         cbbAlgorithm1.setFont(new Font("Tahoma", Font.PLAIN, 13));
         cbbAlgorithm1.setBounds(100, 20, 130, 22);
         pn11.add(cbbAlgorithm1);
@@ -600,7 +600,7 @@ public class GUI extends JFrame implements ActionListener {
         cbbAlgorithm41.setFont(new Font("Tahoma", Font.PLAIN, 13));
         cbbAlgorithm41.setBounds(110, 30, 100, 22);
         cbbAlgorithm41
-                .setModel(new DefaultComboBoxModel(new String[]{"AES", "Blowfish", "DES", "DESede", "RC2", "RC4"}));
+                .setModel(new DefaultComboBoxModel(new String[]{"AES", "ARCFOUR", "Blowfish", "DES", "DESede", "RC2"}));
         pn41.add(cbbAlgorithm41);
         cbbAlgorithm41.addActionListener(this);
 
@@ -711,68 +711,112 @@ public class GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // symmetric
 
-//        xử lý phần select
+//        xử lý phần select mode và padding
         if (e.getSource() == cbbMode1) {
-            cbbPadding1.setModel(new DefaultComboBoxModel(EncryptionUtils.getPadding(cbbMode1.getSelectedItem().toString())));
+            cbbPadding1.setModel(new DefaultComboBoxModel(EncryptionUtils.getPaddingSymmetric(cbbMode1.getSelectedItem().toString())));
         }
 
-//        xử lý phần encode
+//        xử lý phần chọn key
         if (e.getSource() == btnSelectKey1) {
             EncryptionUtils.selectFile(tfKey1);
         }
 
+//         xử lý chọn file
         if (e.getSource() == btnSelect1) {
             EncryptionUtils.selectFile(tfInputFile1);
         }
 
+//        xử lý mỗi khi chọn radio button khác thì phải reset lại cho người dùng nhập
         if (e.getSource() == rbEncrypt1 || e.getSource() == rbDecrypt1) {
             resetText();
         }
 
         if (e.getSource() == btnStart1) {
+            // xử lý nếu key chưa được chọn
+            if (tfKey1.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "request to choose algorithm key !!!");
+                return;
+            }
+
+            // xử lý nếu chọn sai key
+            if (!tfKey1.getText().equals("E:\\Encryption Key\\symmetric.key")) {
+                JOptionPane.showMessageDialog(null, "Invalid key !!!");
+                return;
+            }
+
+            if (cb12.isSelected() && tfInputFile1.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "file selection request !!!");
+                return;
+            }
+
+            // xử lý nếu chưa chọn chế độ encrypt hay decrypt
             if (!cb11.isSelected() && !cb12.isSelected()) {
                 JOptionPane.showMessageDialog(null, "request to choose encryption type !!!");
             } else {
-                if (tfKey1.getText().equals("")) {
-                    JOptionPane.showMessageDialog(null, "request to choose algorithm key !!!");
+                String algorithmName = cbbAlgorithm1.getSelectedItem().toString();
+                String mode = cbbMode1.getSelectedItem().toString();
+                String padding = cbbPadding1.getSelectedItem().toString();
+                String message = tfInputText1.getText();
+                String keyPath = tfKey1.getText();
+                String inputAlgorithm = EncryptionUtils.getAlgorithm(algorithmName, mode, padding);
+
+                String fileName = tfInputFile1.getText();
+
+                // xử lý chỉ được xài với NoPadding
+                if ((inputAlgorithm.contains("CTR") || inputAlgorithm.contains("CTS") || inputAlgorithm.contains("GCM"))
+                        && !inputAlgorithm.contains("NoPadding")) {
+                    JOptionPane.showMessageDialog(null, "This mode must be used with NoPadding");
                     return;
                 }
 
-                // còn lỗi phải xử lý (xử lý chỉ xài dc NoPadding)
-//                if ((inputAlgorithm.contains("CTR") || inputAlgorithm.contains("CTS") || inputAlgorithm.contains("GCM"))
-//                        && !inputAlgorithm.contains("NoPadding")) {
-//                    JOptionPane.showMessageDialog(null, "This mode must be used with NoPadding");
-//                    return;
-//                }
+                // xử lý arcfour
+                if (algorithmName.equals("ARCFOUR") && !inputAlgorithm.equals("ARCFOUR/ECB/NoPadding")
+                        && !inputAlgorithm.equals("ARCFOUR")) {
+                    JOptionPane.showMessageDialog(null,
+                            "ARCFOUR algorithm can only combine with ECB mode and padding is NoPadding !!!");
+                    return;
+                }
+
+                // xử lý gcm
+                if (mode.equals("GCM") && !algorithmName.equals("AES")) {
+                    JOptionPane.showMessageDialog(null,
+                            "GCM mode can only be combined with AES algorithm !!!");
+                    return;
+                }
 
                 // encrypt text
                 if (cb11.isSelected() && rbEncrypt1.isSelected()) {
                     try {
-                        String algorithmName = cbbAlgorithm1.getSelectedItem().toString();
-                        String mode = cbbMode1.getSelectedItem().toString();
-                        String padding = cbbPadding1.getSelectedItem().toString();
-                        String message = tfInputText1.getText();
-                        String keyPath = tfKey1.getText();
-                        String inputAlgorithm = EncryptionUtils.getAlgorithm(algorithmName, mode, padding);
-                        System.out.println(algorithmName + "/" + mode + "/" + padding);
-
                         tfOutputText1.setText(symmetric.encrypt(message, keyPath, inputAlgorithm, algorithmName));
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
                 }
 
+                // decrypt text
                 if (cb11.isSelected() && rbDecrypt1.isSelected()) {
                     try {
-                        String algorithmName = cbbAlgorithm1.getSelectedItem().toString();
-                        String mode = cbbMode1.getSelectedItem().toString();
-                        String padding = cbbPadding1.getSelectedItem().toString();
-                        String message = tfInputText1.getText();
-                        String keyPath = tfKey1.getText();
-                        String inputAlgorithm = EncryptionUtils.getAlgorithm(algorithmName, mode, padding);
-                        System.out.println(algorithmName + "/" + mode + "/" + padding);
-
                         tfOutputText1.setText(symmetric.decrypt(message, keyPath, inputAlgorithm, algorithmName));
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
+
+                // encrypt file
+                if (cb12.isSelected() && rbEncrypt1.isSelected()) {
+                    try {
+                        JOptionPane.showMessageDialog(null, "successful encryption !!!");
+                        tfOutputFile1.setText(symmetric.encryptFile(fileName, keyPath, inputAlgorithm, algorithmName));
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
+
+                // decrypt file
+                if (cb12.isSelected() && rbDecrypt1.isSelected()) {
+                    try {
+                        JOptionPane.showMessageDialog(null, "successful decryption !!!");
+                        tfOutputFile1.setText(symmetric.decryptFile(fileName, keyPath, inputAlgorithm, algorithmName));
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
