@@ -5,13 +5,18 @@ import java.awt.*;
 import java.io.File;
 
 public class EncryptionUtils {
-    private static final String[] SIZE_DES = {"56"};
     private static final String[] SIZE_AES = {"128", "192", "256"}; // default 128
-    private static final String[] SIZE_BLOWFISH = {"32", "128", "448"}; // bội số của 8 từ 32 - 448, default 128
+    private static final String[] SIZE_ARCFOUR = {"56", "112", "128", "168", "192", "224", "256", "384", "448", "512"}; // từ 40 -> 1024 default là 128
+    private static final String[] SIZE_BLOWFISH = {"32", "56", "112", "128", "168", "192", "224", "256", "384", "448"}; // bội số của 8 từ 32 - 448, default 128
+    private static final String[] SIZE_DES = {"56"};
     private static final String[] SIZE_DESEDE = {"112", "168"}; // default 168
-    private static final String[] PADDING = {"NoPadding", "PKCS5Padding", "ISO10126Padding"};
+    private static final String[] SIZE_RC2 = {"56", "112", "128", "168", "192", "224", "256", "384", "448", "512"}; // từ 40 -> 1024 default là 128
 
-    private static final String[] EMPTY = {""};
+    private static final String[] PADDING_SYMMETRIC = {"NoPadding", "PKCS5Padding", "ISO10126Padding"};
+    private static final String[] PADDING_ASYMMETRIC = {"NoPadding", "PKCS1Padding", "OAEPPadding",
+            "OAEPWithMD5AndMGF1Padding", "OAEPWithSHA1AndMGF1Padding", "OAEPWithSHA-1AndMGF1Padding",
+            "OAEPWithSHA-224AndMGF1Padding", "OAEPWithSHA-256AndMGF1Padding", "OAEPWithSHA-384AndMGF1Padding",
+            "OAEPWithSHA-512AndMGF1Padding"};
 
     public static void selectFile(JTextField tf) {
         JFileChooser fileChooser = new JFileChooser();
@@ -25,16 +30,21 @@ public class EncryptionUtils {
     }
 
     public static String[] getSize(String algorithm) {
-        if (algorithm.equals("DES")) {
-            return SIZE_DES;
-        } else if (algorithm.equals("AES")) {
-            return SIZE_AES;
-        } else if (algorithm.equals("Blowfish")) {
-            return SIZE_BLOWFISH;
-        } else if (algorithm.equals("DESede")) {
-            return SIZE_DESEDE;
-        } else {
-            return EMPTY;
+        switch (algorithm) {
+            case "AES":
+                return SIZE_AES;
+            case "ARCFOUR":
+                return SIZE_ARCFOUR;
+            case "Blowfish":
+                return SIZE_BLOWFISH;
+            case "DES":
+                return SIZE_DES;
+            case "DESede":
+                return SIZE_DESEDE;
+            case "RC2":
+                return SIZE_RC2;
+            default:
+                return null;
         }
     }
 
@@ -42,7 +52,7 @@ public class EncryptionUtils {
         if (mode.equals("NONE")) {
             return new String[]{"NONE"};
         } else {
-            return PADDING;
+            return PADDING_SYMMETRIC;
         }
     }
 
