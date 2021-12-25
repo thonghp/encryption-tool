@@ -14,7 +14,7 @@ public class Symmetric {
     public static Base64.Decoder decoder = Base64.getDecoder();
     public Cipher cipher;
 
-    public void generateKeySymmetric(String algorithm, int size) throws Exception {
+    public void generateKey(String algorithm, int size) throws Exception {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
         keyGenerator.init(size); // độ dài key
         SecretKey secretKey = keyGenerator.generateKey();
@@ -62,7 +62,7 @@ public class Symmetric {
         return cipher;
     }
 
-    public String encrypt(String original, String keyPath, String inputAlgorithm, String algorithmName) throws Exception {
+    public String encryptText(String original, String keyPath, String inputAlgorithm, String algorithmName) throws Exception {
         SecretKey key = readKey(keyPath, algorithmName);
 
         cipher = Cipher.getInstance(inputAlgorithm); // xài chung cipher thì mới chung getIv dc
@@ -75,7 +75,7 @@ public class Symmetric {
         return encoder.encodeToString(cipherText);
     }
 
-    public String decrypt(String encrypt, String keyPath, String inputAlgorithm, String algorithmName) throws Exception {
+    public String decryptText(String encrypt, String keyPath, String inputAlgorithm, String algorithmName) throws Exception {
         SecretKey key = readKey(keyPath, algorithmName);
 
         if (inputAlgorithm.equals(algorithmName) || inputAlgorithm.contains("ECB")) {
@@ -158,7 +158,7 @@ public class Symmetric {
 
     public static void main(String[] args) throws Exception {
         Symmetric ins = new Symmetric();
-        ins.generateKeySymmetric("AES", 192);
+//        ins.generateKeySymmetric("AES", 192);
 
         /*
          * nopadding => ecb/cbc/pcbc là 8 - cts > 8 (DES/AES)
@@ -169,9 +169,9 @@ public class Symmetric {
         String inputAlgorithm = "AES/GCM/NoPadding";
 //        String inputAlgorithm = "DES";
 
-        String encrypt = ins.encrypt(input, "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
+        String encrypt = ins.encryptText(input, "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
         System.out.println(encrypt);
-        System.out.println(ins.decrypt(encrypt, "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName));
+//        System.out.println(ins.decryptText(encrypt, "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName));
 
 //        ins.encryptFile("E:\\Encryption Key\\a.png", "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
 //        ins.decryptFile("E:\\Encryption Key\\encrypt.png", "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
