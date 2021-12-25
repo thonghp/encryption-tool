@@ -48,11 +48,13 @@ public class EncryptionUtils {
         }
     }
 
-    public static String[] getPadding(String mode) {
+    public static String[] getPaddingSymmetric(String mode, String option) {
         if (mode.equals("NONE")) {
             return new String[]{"NONE"};
-        } else {
+        } else if (option.equals("symmetric")) {
             return PADDING_SYMMETRIC;
+        } else {
+            return PADDING_ASYMMETRIC;
         }
     }
 
