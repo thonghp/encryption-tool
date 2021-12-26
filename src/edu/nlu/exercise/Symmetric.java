@@ -92,7 +92,7 @@ public class Symmetric {
         return new String(plainText);
     }
 
-    public String fileHandling(String inputFile, String outputFile) throws Exception {
+    public String fileHandling(String inputFile, String outputFile, String mode) throws Exception {
         File file = new File(inputFile);
         long size = 0;
 
@@ -100,7 +100,8 @@ public class Symmetric {
             size = file.length();
         }
         String[] seperateExtension = file.getName().split("[.]");
-        String rename = outputFile + "." + seperateExtension[seperateExtension.length - 1];
+//        String rename = outputFile + "." + seperateExtension[seperateExtension.length - 1];
+        String rename = outputFile + seperateExtension[0] + mode + "." + seperateExtension[seperateExtension.length - 1];
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
              BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(rename))) {
 
@@ -138,7 +139,7 @@ public class Symmetric {
         cipher = Cipher.getInstance(inputAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, key);
 
-        return fileHandling(fileName, "E:\\Encryption Key\\encrypt");
+        return fileHandling(fileName, "E:\\Encryption Key\\","_encrypt");
     }
 
     public String decryptFile(String fileEncrypt, String keyPath, String inputAlgorithm, String algorithmName) throws Exception {
@@ -153,7 +154,7 @@ public class Symmetric {
         }
 
         // viết thêm để xử lý đọc 1 lần
-        return fileHandling(fileEncrypt, "E:\\Encryption Key\\decrypt");
+        return fileHandling(fileEncrypt, "E:\\Encryption Key\\","_decrypt");
     }
 
     public static void main(String[] args) throws Exception {
@@ -169,11 +170,11 @@ public class Symmetric {
         String inputAlgorithm = "AES/GCM/NoPadding";
 //        String inputAlgorithm = "DES";
 
-        String encrypt = ins.encryptText(input, "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
-        System.out.println(encrypt);
+//        String encrypt = ins.encryptText(input, "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
+//        System.out.println(encrypt);
 //        System.out.println(ins.decryptText(encrypt, "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName));
 
-//        ins.encryptFile("E:\\Encryption Key\\a.png", "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
-//        ins.decryptFile("E:\\Encryption Key\\encrypt.png", "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
+        ins.encryptFile("E:\\Encryption Key\\slide.zip", "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
+        ins.decryptFile("E:\\Encryption Key\\slide_encrypt.zip", "E:\\Encryption Key\\symmetric.key", inputAlgorithm, algorithmName);
     }
 }
