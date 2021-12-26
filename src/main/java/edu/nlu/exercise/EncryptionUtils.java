@@ -11,12 +11,16 @@ public class EncryptionUtils {
     private static final String[] SIZE_DES = {"56"};
     private static final String[] SIZE_DESEDE = {"112", "168"}; // default 168
     private static final String[] SIZE_RC2 = {"56", "112", "128", "168", "192", "224", "256", "384", "448", "512"}; // từ 40 -> 1024 default là 128
+    private static final String[] SIZE_TWOFISH = {"128", "192", "256"};
+    private static final String[] SIZE_IDEA = {"128"};
 
-    private static final String[] PADDING_SYMMETRIC = {"NoPadding", "PKCS5Padding", "ISO10126Padding"};
+    private static final String[] PADDING_SYMMETRIC = {"NoPadding", "PKCS5Padding", "PKCS7Padding", "ISO10126Padding",
+            "ISO7816-4Padding"};
+
     private static final String[] PADDING_ASYMMETRIC = {"NoPadding", "PKCS1Padding", "OAEPPadding",
             "OAEPWithMD5AndMGF1Padding", "OAEPWithSHA1AndMGF1Padding", "OAEPWithSHA-1AndMGF1Padding",
             "OAEPWithSHA-224AndMGF1Padding", "OAEPWithSHA-256AndMGF1Padding", "OAEPWithSHA-384AndMGF1Padding",
-            "OAEPWithSHA-512AndMGF1Padding"};
+            "OAEPWithSHA-512AndMGF1Padding", "OAEPWITHSHA-512/224ANDMGF1PADDING", "OAEPWITHSHA-512/256ANDMGF1PADDING"};
 
     public static void selectFile(JTextField tf) {
         JFileChooser fileChooser = new JFileChooser();
@@ -43,6 +47,10 @@ public class EncryptionUtils {
                 return SIZE_DESEDE;
             case "RC2":
                 return SIZE_RC2;
+            case "Twofish":
+                return SIZE_TWOFISH;
+            case "IDEA":
+                return SIZE_IDEA;
             default:
                 return null;
         }
