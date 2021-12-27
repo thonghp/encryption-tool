@@ -1,4 +1,4 @@
-package edu.nlu.exercise;
+package edu.nlu.exercise.algorithm;
 
 import java.io.File;
 import java.io.FileInputStream;
