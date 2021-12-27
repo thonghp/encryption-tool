@@ -1,4 +1,4 @@
-package edu.nlu.exercise;
+package edu.nlu.exercise.utils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,18 +20,7 @@ public class EncryptionUtils {
     private static final String[] PADDING_ASYMMETRIC = {"NoPadding", "PKCS1Padding", "OAEPPadding",
             "OAEPWithMD5AndMGF1Padding", "OAEPWithSHA1AndMGF1Padding", "OAEPWithSHA-1AndMGF1Padding",
             "OAEPWithSHA-224AndMGF1Padding", "OAEPWithSHA-256AndMGF1Padding", "OAEPWithSHA-384AndMGF1Padding",
-            "OAEPWithSHA-512AndMGF1Padding", "OAEPWITHSHA-512/224ANDMGF1PADDING", "OAEPWITHSHA-512/256ANDMGF1PADDING"};
-
-    public static void selectFile(JTextField tf) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setMultiSelectionEnabled(false); // chỉ cho chọn 1 file không cho chọn nhiều
-        int response = fileChooser.showDialog(null, "Select file"); // this
-
-        if (response == JFileChooser.APPROVE_OPTION) {
-            File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-            tf.setText(file.toString());
-        }
-    }
+            "OAEPWithSHA-512AndMGF1Padding", "OAEPWITHSHA-512/224AndMGF1Padding", "OAEPWITHSHA-512/256AndMGF1Padding"};
 
     public static String[] getSize(String algorithm) {
         switch (algorithm) {
